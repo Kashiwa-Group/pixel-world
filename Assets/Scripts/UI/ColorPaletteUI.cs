@@ -22,6 +22,10 @@ public class ColorPaletteUI : MonoBehaviour
             OnColorSelected += painter.SetColor;
     }
 
+    /// <summary>
+    /// Generates UI for the color palette. This method is automatically
+    /// called when the palette is set via <see cref="PaletteManager.SetPalette"/>.
+    /// </summary>
     public void GeneratePaletteUI()
     {
         var palette = PaletteManager.Instance.ColorPalette;

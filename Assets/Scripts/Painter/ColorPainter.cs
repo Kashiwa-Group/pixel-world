@@ -18,6 +18,11 @@ public class ColorPainter : MonoBehaviour
         palette = PaletteManager.Instance.ColorPalette;
     }
 
+    /// <summary>
+    /// Sets the color to paint with to the color at the given index in the palette.
+    /// </summary>
+    /// <param name="index">Index of the color in the palette.</param>
+    /// <param name="color">The color to paint with.</param>
     public void SetColor(int index, Color color)
     {
         //Debug.Log($"Color selected {index}");
@@ -49,6 +54,11 @@ public class ColorPainter : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Given a tile, get its index in the palette. -1 if the tile is not a number tile.
+    /// </summary>
+    /// <param name="tile">The tile to get the index from.</param>
+    /// <returns>The index of the given tile in the palette, or -1 if the tile is not a number tile.</returns>
     private int GetIndexFromTile(TileBase tile)
     {
         string name = tile.name;
@@ -59,6 +69,13 @@ public class ColorPainter : MonoBehaviour
         return -1;
     }
 
+    /// <summary>
+    /// Given a tile index and a color, return the corresponding colored tile.
+    /// If the tile does not exist in the cache, create a new one.
+    /// </summary>
+    /// <param name="index">The index of the tile in the palette.</param>
+    /// <param name="color">The color of the tile.</param>
+    /// <returns>The colored tile.</returns>
     private Tile GetOrCreateColorTile(int index, Color color)
     {
         if (tileCache.TryGetValue(index, out Tile cached))

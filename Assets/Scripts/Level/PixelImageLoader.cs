@@ -14,6 +14,30 @@ public class PixelImageLoader : MonoBehaviour
         LoadAndRender();
     }
     
+    /// <summary>
+    /// Loads and renders a pixel image from a JSON file.
+    /// Clears the current tilemap and loads the image at the origin.
+    /// <br/>
+    /// Expects a JSON file with the following format:
+    /// <code>
+    /// {
+    ///     "width": 3,
+    ///     "height": 3,
+    ///     "pixels": [
+    ///         [0, 0, 0],
+    ///         [0, 0, 0],
+    ///         [0, 0, 0]
+    ///     ],
+    ///     "palette": [
+    ///         "#ff0000",
+    ///         "#00ff00"
+    ///     ]
+    /// }
+    /// </code>
+    /// <br/>
+    /// The tilemap is cleared and the image is rendered at the origin (0, 0, 0).
+    /// The palette is also loaded and saved in the PaletteManager.
+    /// </summary>
     [ContextMenu("LoadAndRender")]
     public void LoadAndRender()
     {
@@ -79,13 +103,17 @@ public class PixelImageLoader : MonoBehaviour
             }
         }
 
-// Saving a palette in PaletteManager
+		// Saving a palette in PaletteManager
         PaletteManager.Instance.SetPalette(palette);
         PaletteManager.Instance.SetTiles(numberTiles);
 
         //Debug.Log($"✅ Rendered {width}x{height} grid with numbered tiles");
     }
         
+    /// <summary>
+    /// Builds numbered tiles from the sprites in numberSprites.
+    /// Creates a ScriptableObject of Tile type for each sprite and assigns the sprite, sets color to white and sets the name to "NumberTile_0", "NumberTile_1", etc.
+    /// </summary>
     private void BuildTilesFromSprites()
     {
         if (numberSprites == null || numberSprites.Length == 0)

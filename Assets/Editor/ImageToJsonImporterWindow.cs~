@@ -78,10 +78,6 @@ public class ImageToJsonImporterWindow : EditorWindow
         GUI.enabled = true;
     }
 
-    /// <summary>
-    /// Draws a checkerboard background in the given area.
-    /// </summary>
-    /// <param name="area">The area to draw the checkerboard in.</param>
     private void DrawCheckerBackground(Rect area)
     {
         if (checkerTex == null)
@@ -102,31 +98,6 @@ public class ImageToJsonImporterWindow : EditorWindow
         );
     }
 
-    /// <summary>
-    /// Converts a texture to a JSON file, saving it in <see cref="folderPath"/>.
-    /// </summary>
-    /// <param name="texture">The texture to convert.</param>
-    /// <param name="filename">The base name of the file to save.</param>
-    /// <remarks>
-    /// The format of the JSON file is as follows:
-    /// <code>
-    /// {
-    ///     "name": "&lt;filename&gt;",
-    ///     "width": &lt;width&gt;,
-    ///     "height": &lt;height&gt;,
-    ///     "palette": [
-    ///         "#&lt;hex&gt;",
-    ///         "#&lt;hex&gt;",
-    ///         ...
-    ///     ],
-    ///     "pixels": [
-    ///         [1, 2, 3, ...],
-    ///         [4, 5, 6, ...],
-    ///         ...
-    ///     ]
-    /// }
-    /// </code>
-    /// </remarks>
     private void ConvertAndSave(Texture2D texture, string filename)
 {
     int width = texture.width;

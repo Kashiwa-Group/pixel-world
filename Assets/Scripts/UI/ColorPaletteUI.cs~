@@ -17,7 +17,6 @@ public class ColorPaletteUI : MonoBehaviour
     
     private void Start()
     {
-        
         var painter = FindObjectOfType<ColorPainter>();
         if (painter != null)
             OnColorSelected += painter.SetColor;
