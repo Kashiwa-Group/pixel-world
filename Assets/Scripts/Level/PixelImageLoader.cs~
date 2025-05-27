@@ -1,0 +1,82 @@
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using Defective.JSON;
+
+public class PixelImageLoader : MonoBehaviour
+{
+    public Tilemap numberTilemap;     // Tiles-numbers only
+    public TextAsset jsonFile;
+    public Sprite[] numberSprites; // we're only throwing subsprites !!
+    private Tile[] numberTiles;   
+    
+    [ContextMenu("LoadAndRender")]
+    public void LoadAndRender()
+    {
+        
+        if (jsonFile == null || numberTilemap == null)
+        {
+            Debug.LogError("Assign all references in inspector (tilemap, json, tiles)");
+            return;
+        }
+        
+        BuildTilesFromSprites();
+
+        numberTilemap.ClearAllTiles();
+
+        JSONObject root = new JSONObject(jsonFile.text);
+
+        int width = (int)root["width"].intValue;
+        int height = (int)root["height"].intValue;
+
+        var pixelArray = root["pixels"];
+        if (pixelArray == null || pixelArray.count != height)
+        {
+            Debug.LogError($"Pixels missing or row count mismatch: got {pixelArray?.count}, expected {height}");
+            return;
+        }
+
+        Vector3Int originOffset = new Vector3Int(-width / 2, height / 2, 0);
+
+        for (int y = 0; y < height; y++)
+        {
+            var row = pixelArray[y];
+            if (row == null || row.count != width)
+            {
+                Debug.LogWarning($"Row {y} is null or width mismatch");
+                continue;
+            }
+
+            for (int x = 0; x < width; x++)
+            {
+                int index = (int)row[x].intValue;
+                if (index >= numberTiles.Length) continue;
+
+                Vector3Int cellPos = new Vector3Int(x, -y, 0) + originOffset;
+                numberTilemap.SetTile(cellPos, numberTiles[index]);
+            }
+        }
+
+        Debug.Log($"✅ Rendered {width}x{height} grid with numbered tiles");
+    }
+        
+    private void BuildTilesFromSprites()
+    {
+        if (numberSprites == null || numberSprites.Length == 0)
+        {
+            Debug.LogError("No numberSprites assigned!");
+            return;
+        }
+
+        numberTiles = new Tile[numberSprites.Length];
+
+        for (int i = 0; i < numberSprites.Length; i++)
+        {
+            Tile t = ScriptableObject.CreateInstance<Tile>();
+            t.sprite = numberSprites[i];
+            t.color = Color.white;
+            t.name = $"NumberTile_{i}";
+            numberTiles[i] = t;
+        }
+    }
+
+}
