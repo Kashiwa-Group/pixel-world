@@ -1,0 +1,75 @@
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using System.Collections.Generic;
+
+public class ColorPainter : MonoBehaviour
+{
+    public Tilemap numberTilemap;
+    public Tilemap paintedTilemap;
+    public Sprite whiteSprite; // White 1x1 sprite, assign in the inspector. !!
+
+    private int selectedIndex = -1;
+    private Color[] palette;
+
+    private Dictionary<int, Tile> tileCache = new();
+
+    private void Start()
+    {
+        palette = PaletteManager.Instance.ColorPalette;
+    }
+
+    public void SetColor(int index, Color color)
+    {
+        //Debug.Log($"Color selected {index}");
+        selectedIndex = index;
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0) && selectedIndex > 0)
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int cell = numberTilemap.WorldToCell(worldPos);
+
+            TileBase currentTile = numberTilemap.GetTile(cell);
+            //Debug.Log($"Click on: {cell}");
+
+            if (currentTile == null) return;
+
+            int tileIndex = GetIndexFromTile(currentTile);
+            //Debug.Log($"Tile under the cursor: {currentTile.name}");
+
+            if (tileIndex == selectedIndex)
+            {
+                var tile = GetOrCreateColorTile(selectedIndex, palette[selectedIndex]);
+                paintedTilemap.SetTile(cell, tile);
+                numberTilemap.SetTile(cell, null);
+                //Debug.Log($"✅ Painted {cell} color {palette[selectedIndex]}");
+            }
+        }
+    }
+
+    private int GetIndexFromTile(TileBase tile)
+    {
+        string name = tile.name;
+        Debug.Log("Press the tail: " + tile?.name);
+        if (name.StartsWith("NumberTile_") && int.TryParse(name.Substring("NumberTile_".Length), out int index))
+            return index;
+
+        return -1;
+    }
+
+    private Tile GetOrCreateColorTile(int index, Color color)
+    {
+        if (tileCache.TryGetValue(index, out Tile cached))
+            return cached;
+
+        Tile t = ScriptableObject.CreateInstance<Tile>();
+        t.sprite = whiteSprite;
+        t.color = color;
+        t.flags = TileFlags.None;
+        t.name = $"PaintedTile_{index}";
+        tileCache[index] = t;
+        return t;
+    }
+}

@@ -9,10 +9,14 @@ public class PixelImageLoader : MonoBehaviour
     public Sprite[] numberSprites; // we're only throwing subsprites !!
     private Tile[] numberTiles;   
     
+    private void Start()
+    {
+        LoadAndRender();
+    }
+    
     [ContextMenu("LoadAndRender")]
     public void LoadAndRender()
     {
-        
         if (jsonFile == null || numberTilemap == null)
         {
             Debug.LogError("Assign all references in inspector (tilemap, json, tiles)");
@@ -55,8 +59,31 @@ public class PixelImageLoader : MonoBehaviour
                 numberTilemap.SetTile(cellPos, numberTiles[index]);
             }
         }
+        
+        // Getting palette from JSON
+        var paletteJson = root["palette"];
+        if (paletteJson == null || paletteJson.count == 0)
+        {
+            Debug.LogError("No palette found in JSON.");
+            return;
+        }
 
-        Debug.Log($"✅ Rendered {width}x{height} grid with numbered tiles");
+        Color[] palette = new Color[paletteJson.count];
+        for (int i = 0; i < paletteJson.count; i++)
+        {
+            string hex = paletteJson[i].stringValue;
+            if (!ColorUtility.TryParseHtmlString(hex, out palette[i]))
+            {
+                Debug.LogWarning($"Failed to parse color {hex} at index {i}, defaulting to white.");
+                palette[i] = Color.white;
+            }
+        }
+
+// Saving a palette in PaletteManager
+        PaletteManager.Instance.SetPalette(palette);
+        PaletteManager.Instance.SetTiles(numberTiles);
+
+        //Debug.Log($"✅ Rendered {width}x{height} grid with numbered tiles");
     }
         
     private void BuildTilesFromSprites()
@@ -78,5 +105,4 @@ public class PixelImageLoader : MonoBehaviour
             numberTiles[i] = t;
         }
     }
-
 }

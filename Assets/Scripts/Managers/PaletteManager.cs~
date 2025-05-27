@@ -1,0 +1,45 @@
+using System;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+public class PaletteManager : MonoBehaviour
+{
+    public static PaletteManager Instance { get; private set; }
+
+    public Tile[] ColorTiles { get; private set; }
+    public Color[] ColorPalette { get; private set; }
+    
+    public event Action OnPaletteReady;
+    
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    public void SetTiles(Tile[] tiles)
+    {
+        ColorTiles = tiles;
+    }
+
+    public void SetPalette(Color[] palette)
+    {
+        ColorPalette = palette;
+        OnPaletteReady?.Invoke(); 
+    }
+    
+    private Tile CreateColorTile(Color color)
+    {
+        Tile tile = ScriptableObject.CreateInstance<Tile>();
+        tile.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
+        tile.color = color;
+        tile.flags = TileFlags.None;
+        return tile;
+    }
+
+    public bool IsReady => ColorTiles != null && ColorPalette != null;
+}

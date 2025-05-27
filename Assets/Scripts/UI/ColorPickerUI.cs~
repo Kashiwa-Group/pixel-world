@@ -1,0 +1,24 @@
+using UnityEngine;
+
+public class ColorPickerUI : MonoBehaviour
+{
+    public GameObject buttonPrefab;
+    public Transform contentPanel; // ScrollView/Viewport/Content
+    public PixelImageLoader loader; // ссылка на генератор
+
+    public void GeneratePaletteButtons(string[] palette)
+    {
+        foreach (Transform child in contentPanel)
+            Destroy(child.gameObject);
+
+        for (int i = 1; i < palette.Length; i++) // index 0 пропускаем
+        {
+            ColorUtility.TryParseHtmlString(palette[i], out var color);
+            int index = i;
+
+            GameObject btn = Instantiate(buttonPrefab, contentPanel);
+            btn.GetComponent<Image>().color = color;
+            btn.GetComponent<Button>().onClick.AddListener(() => loader.SelectColor(index));
+        }
+    }
+}
